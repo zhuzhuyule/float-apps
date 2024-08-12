@@ -57,7 +57,10 @@ function App(): JSX.Element {
         onChange={(e) => setUrl(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === 'Enter') {
-            window.electron.ipcRenderer.send(COMMAND.go, { url: e.currentTarget.value })
+            const url = /^\w/.test(e.currentTarget.value)
+              ? e.currentTarget.value
+              : `http://${e.currentTarget.value}`
+            window.electron.ipcRenderer.send(COMMAND.go, { url })
           }
         }}
         size="small"

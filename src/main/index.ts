@@ -1,4 +1,12 @@
-import { app, BrowserWindow, ipcMain, BrowserView, Menu, MenuItem } from 'electron'
+import {
+  app,
+  BrowserWindow,
+  ipcMain,
+  WebContentsView,
+  Menu,
+  MenuItem,
+  globalShortcut
+} from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -12,7 +20,7 @@ function createWindow(): void {
     height: 670,
     show: false,
     //transparent: true,
-    alwaysOnTop: true,
+    // alwaysOnTop: true,
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
@@ -21,8 +29,8 @@ function createWindow(): void {
     }
   })
 
-  const view = new BrowserView()
-  mainWindow.addBrowserView(view)
+  const view = new WebContentsView()
+  mainWindow.contentView.addChildView(view)
 
   function updateViewSize(): void {
     view.setBounds({
@@ -114,7 +122,44 @@ function createWindow(): void {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
 
+  // 注册 CmdOrCtrl+Shift+I 快捷键
+  let JSWin: BrowserWindow | null = null
+  const newJSWin = (): void => {
+    if (!JSWin) {
+      JSWin = new BrowserWindow({
+        width: 900,
+        height: 670,
+        show: true,
+        autoHideMenuBar: true,
+        ...(process.platform === 'linux' ? { icon } : {}),
+        webPreferences: {
+          preload: join(__dirname, '../preload/index.js'),
+          sandbox: false
+        }
+      })
+      JSWin.loadURL('http://jsitor.com')
+
+      JSWin.on('closed', () => {
+        JSWin = null
+      })
+    } else {
+      JSWin.show()
+      JSWin.focus()
+    }
+  }
+
+  if (process.platform === 'darwin') {
+    globalShortcut.register('Cmd+Shift+J', () => {
+      newJSWin()
+    })
+  } else {
+    globalShortcut.register('Ctrl+Shift+J', () => {
+      newJSWin()
+    })
+  }
+
   mainWindow.on('closed', () => {
+    globalShortcut.unregisterAll()
     app.quit()
   })
 }
