@@ -13,6 +13,8 @@ import icon from '../../resources/icon.png?asset'
 
 import { BROWSER_BAR_HEIGHT, COMMAND } from '../constant'
 
+let JSWin: BrowserWindow | null = null
+
 function createWindow(): void {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -37,7 +39,7 @@ function createWindow(): void {
       x: 0,
       y: BROWSER_BAR_HEIGHT,
       width: mainWindow.getBounds().width,
-      height: mainWindow.getBounds().height - BROWSER_BAR_HEIGHT
+      height: mainWindow.getBounds().height - BROWSER_BAR_HEIGHT - 30
     })
   }
 
@@ -123,7 +125,6 @@ function createWindow(): void {
   }
 
   // 注册 CmdOrCtrl+Shift+I 快捷键
-  let JSWin: BrowserWindow | null = null
   const newJSWin = (): void => {
     if (!JSWin) {
       JSWin = new BrowserWindow({
@@ -194,6 +195,7 @@ app.whenReady().then(() => {
 // for applications and their menu bar to stay active until the user quits
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
+  JSWin && JSWin.close()
   if (process.platform !== 'darwin') {
     app.quit()
   }
