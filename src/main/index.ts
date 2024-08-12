@@ -11,6 +11,7 @@ function createWindow(): void {
     width: 900,
     height: 670,
     show: false,
+    //transparent: true,
     alwaysOnTop: true,
     autoHideMenuBar: true,
     ...(process.platform === 'linux' ? { icon } : {}),
@@ -51,7 +52,22 @@ function createWindow(): void {
   })
 
   ipcMain.on(COMMAND.toggleDevTool, () => view.webContents.toggleDevTools())
-  ipcMain.on(COMMAND.back, () => view.webContents.goBack())
+  ipcMain.on(COMMAND.back, () => {
+    view.webContents.goBack()
+    // const a =new BrowserWindow({
+    //   width: 900,
+    //   height: 670,
+    //   alwaysOnTop: true,
+    //   transparent: true,
+    //   autoHideMenuBar: true,
+    //   ...(process.platform === 'linux' ? { icon } : {}),
+    //   webPreferences: {
+    //     preload: join(__dirname, '../preload/index.js'),
+    //     sandbox: false
+    //   }
+    // })
+    // a.loadFile(join(__dirname, '../renderer/index.html'))
+  })
   ipcMain.on(COMMAND.forward, () => view.webContents.goForward())
   ipcMain.on(COMMAND.refresh, () => view.webContents.reload())
   ipcMain.on(COMMAND.go, (_, payload) => view.webContents.loadURL(payload.url))
