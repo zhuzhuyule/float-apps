@@ -40,7 +40,6 @@ class JSRun extends BrowserWindow {
           message: '页面有改动，是否保存后退出？',
           buttons: ['取消', '退出'],
           defaultId: 0,
-          cancelId: 0
         })
         if (idx === 1) {
           e.preventDefault()

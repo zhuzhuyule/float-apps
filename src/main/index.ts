@@ -1,11 +1,29 @@
 import { electronApp, optimizer } from '@electron-toolkit/utils'
-import { app, BrowserWindow, globalShortcut } from 'electron'
+import { app, BrowserWindow, globalShortcut, Menu, MenuItem } from 'electron'
 
 import { FloatBrowser } from './plugins/FloatBrowser'
 import { registerShortcut } from './utils/shortKey'
 
 function createWindow(): void {
   new FloatBrowser()
+}
+
+function addMenu(): void {
+  const currentMenu = Menu.getApplicationMenu()
+  const fileMenu = currentMenu!.items.find((item) => ['窗口', 'Window'].includes(item.label))
+  fileMenu!.submenu?.insert(
+    0,
+    new MenuItem({
+      label: '置顶',
+      accelerator: 'CmdOrCtrl+Shift+F', // 定义快捷键
+      click: (_, window) => {
+        if (window) {
+          window.setAlwaysOnTop(!window.isAlwaysOnTop())
+        }
+      }
+    })
+  )
+  Menu.setApplicationMenu(currentMenu)
 }
 
 app.whenReady().then(() => {
@@ -19,6 +37,7 @@ app.whenReady().then(() => {
   })
 
   createWindow()
+  addMenu()
   registerShortcut()
 
   app.on('activate', function () {

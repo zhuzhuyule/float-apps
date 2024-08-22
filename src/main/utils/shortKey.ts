@@ -1,4 +1,4 @@
-import { globalShortcut } from 'electron'
+import { BrowserWindow, globalShortcut, Menu } from 'electron'
 import { FloatBrowser } from '../plugins/FloatBrowser'
 import { JSRunWindow } from '../plugins/JSRunner'
 
