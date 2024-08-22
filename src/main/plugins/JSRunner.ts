@@ -32,20 +32,26 @@ class JSRun extends BrowserWindow {
 
     this.loadURL('http://jsitor.com')
 
-    this.on('close', (e) => {
-      if (!e.defaultPrevented) {
+    let closeTimer: NodeJS.Timeout
+    this.on('close', () => {
+      closeTimer = setTimeout(() => {
         const idx = dialog.showMessageBoxSync(this, {
           type: 'question',
           title: '提示',
           message: '页面有改动，是否保存后退出？',
           buttons: ['取消', '退出'],
-          defaultId: 0,
+          defaultId: 0
         })
+
         if (idx === 1) {
-          e.preventDefault()
           this.destroy()
         }
-      }
+      }, 200)
+    })
+
+    this.on('closed', () => {
+      clearTimeout(closeTimer)
+      this.destroy()
     })
   }
 }
